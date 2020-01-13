@@ -1,4 +1,4 @@
-const devData = require("./dev-data");
+const devData = require("./development-data");
 const testData = require("./test-data");
 
 const ENV = process.env.NODE_ENV || "development";
