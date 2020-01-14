@@ -1,8 +1,8 @@
 const { selectUsers } = require("../models/users-model");
 
 const getUsers = (req, res, next) => {
-  console.log("here");
-  selectUsers()
+  const { username } = req.params;
+  selectUsers(username)
     .then(users => {
       res.status(200).send({ users });
     })
