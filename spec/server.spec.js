@@ -332,6 +332,7 @@ describe("/API", () => {
           expect(result.body.articles.length).to.equal(0);
         });
     });
+    //need changing ^ to differentiate between empty topics/authors and unreal ones
     it("GET:200 returns array of all articles filtered by author and/or topic", () => {
       return request(server)
         .get("/api/articles?author=rogersop&topic=mitch")
