@@ -14,7 +14,7 @@ describe("/API", () => {
   after(() => {
     return connection.destroy();
   });
-  describe.only("/topics", () => {
+  describe("/topics", () => {
     it("GET:200 returns an array of all topics", () => {
       return request(server)
         .get("/api/topics")
@@ -39,6 +39,14 @@ describe("/API", () => {
           expect(result.body.msg).to.equal("Not found");
         });
     });
+    it("PATCH POST and DELETE:405 errors with message method not allowed", () => {
+      return request(server)
+        .patch("/api/topics")
+        .expect(405)
+        .then(result => {
+          expect(result.body.msg).to.equal("Method not allowed");
+        });
+    });
   });
   describe("/users", () => {
     it("GET:200 gets array of all users", () => {
@@ -52,6 +60,7 @@ describe("/API", () => {
             "avatar_url",
             "name"
           );
+          expect(result.body.users.length).to.equal(4);
         });
     });
     it("GET:200 gets user by username", () => {
@@ -75,7 +84,7 @@ describe("/API", () => {
   describe("/articles", () => {
     it("GET:200 returns article by article id", () => {
       return request(server)
-        .get("/api/articles/5")
+        .get("/api/articles/1")
         .expect(200)
         .then(response => {
           expect(response.body.articles[0]).to.have.keys(
@@ -88,7 +97,7 @@ describe("/API", () => {
             "author",
             "comment_count"
           );
-          expect(response.body.articles[0].comment_count).to.equal(2);
+          expect(response.body.articles[0].comment_count).to.equal(13);
         });
     });
     it("GET:400 errors with message invalid data type if given a string as a parameter", () => {
@@ -406,6 +415,16 @@ describe("/API", () => {
         .expect(400)
         .then(result => {
           expect(result.body.msg).to.equal("Invalid data type");
+        });
+    });
+  });
+  describe("/other", () => {
+    it("GET:200 returns info on all possible endpoints", () => {
+      return request(server)
+        .get("/api")
+        .expect(200)
+        .then(result => {
+          expect(result.body.possibleEndpoints).to.include.key("GET /topics");
         });
     });
   });

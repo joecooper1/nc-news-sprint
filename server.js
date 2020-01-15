@@ -11,7 +11,9 @@ const errorCatch = (req, res, next) => {
 server.use(express.json());
 
 server.use(function textLogger(req, res, next) {
-  const data = `Received ${req.method} request for ${req.url} at ${Date.now()}`;
+  const data = `Received ${req.method} request for ${req.url} at ${new Date(
+    Date.now()
+  )}`;
   fs.appendFile("./log.txt", JSON.stringify(data) + `\n`, err => {
     if (err) console.log(err);
     next();
