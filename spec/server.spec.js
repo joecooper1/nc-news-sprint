@@ -14,7 +14,7 @@ describe("/API", () => {
   after(() => {
     return connection.destroy();
   });
-  describe("/topics", () => {
+  describe.only("/topics", () => {
     it("GET:200 returns an array of all topics", () => {
       return request(server)
         .get("/api/topics")
@@ -25,7 +25,15 @@ describe("/API", () => {
     });
     it("GET:404 not found if anything is added on the end of topics", () => {
       return request(server)
-        .get("/api/topics")
+        .get("/api/topics/5")
+        .expect(404)
+        .then(result => {
+          expect(result.body.msg).to.equal("Not found");
+        });
+    });
+    it("GET:404 errors with message not found if given invalid string after api", () => {
+      return request(server)
+        .get("/api/tropics")
         .expect(404)
         .then(result => {
           expect(result.body.msg).to.equal("Not found");
@@ -65,7 +73,7 @@ describe("/API", () => {
     });
   });
   describe("/articles", () => {
-    xit("GET:200 returns article by article id", () => {
+    it("GET:200 returns article by article id", () => {
       return request(server)
         .get("/api/articles/5")
         .expect(200)
@@ -83,7 +91,7 @@ describe("/API", () => {
           expect(response.body.articles[0].comment_count).to.equal(2);
         });
     });
-    xit("GET:400 errors with message invalid data type if given a string as a parameter", () => {
+    it("GET:400 errors with message invalid data type if given a string as a parameter", () => {
       return request(server)
         .get("/api/articles/five")
         .expect(400)
@@ -91,7 +99,7 @@ describe("/API", () => {
           expect(response.body.msg).to.equal("Invalid data type");
         });
     });
-    xit("GET:404 errors with message not found if given non-existent id", () => {
+    it("GET:404 errors with message not found if given non-existent id", () => {
       return request(server)
         .get("/api/articles/500")
         .expect(404)
@@ -324,7 +332,7 @@ describe("/API", () => {
         });
     });
   });
-  describe.only("/comments", () => {
+  describe("/comments", () => {
     it("PATCH:200 updates a comment by adding votes and returns the comment", () => {
       return request(server)
         .patch("/api/comments/6")
@@ -343,10 +351,62 @@ describe("/API", () => {
           expect(result.body.msg).to.equal("Not found");
         });
     });
+    it("PATCH:400 errors with message Invalid data type if given invalid Id", () => {
+      return request(server)
+        .patch("/api/comments/one")
+        .send({ inc_votes: 666 })
+        .expect(400)
+        .then(result => {
+          expect(result.body.msg).to.equal("Invalid data type");
+        });
+    });
+    it("PATCH:400 errors with message Invalid data type if given invalid vote value", () => {
+      return request(server)
+        .patch("/api/comments/1")
+        .send({ inc_votes: "all" })
+        .expect(400)
+        .then(result => {
+          expect(result.body.msg).to.equal("Invalid data type");
+        });
+    });
+    it("PATCH:400 errors with message Update body incomplete if not given valid inc_votes key in body", () => {
+      return request(server)
+        .patch("/api/comments/1")
+        .send({ votes: 100 })
+        .expect(400)
+        .then(result => {
+          expect(result.body.msg).to.equal("Update body incomplete");
+        });
+    });
+    it("PATCH:200 works if another invalid key is also included in update", () => {
+      return request(server)
+        .patch("/api/comments/1")
+        .send({ inc_votes: 1, title: "New title" })
+        .expect(200)
+        .then(result => {
+          expect(result.body.comment[0].votes).to.equal(1);
+        });
+    });
     it("DELETE:204 deletes a comment", () => {
       return request(server)
         .delete("/api/comments/6")
         .expect(204);
+    });
+    it("DELETE:404 errors with message Not found if deleting a non-existent id", () => {
+      return request(server)
+        .delete("/api/comments/6000")
+        .expect(404)
+        .then(result => {
+          expect(result.body.msg).to.equal("Not found");
+        });
+    });
+    it("DELETE:400 errors with message Invalid data type if deleting an invalid id", () => {
+      return request(server)
+        .delete("/api/comments/six")
+        .expect(400)
+        .then(result => {
+          expect(result.body.msg).to.equal("Invalid data type");
+        });
     });
   });
 });

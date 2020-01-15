@@ -3,18 +3,25 @@ const connection = require("../db/connection");
 const selectArticle = article_id => {
   return connection("articles")
     .select(
-      "author",
+      "articles.author",
       "title",
-      "article_id",
-      "body",
+      "articles.article_id",
+      "articles.body",
       "topic",
-      "created_at",
-      "votes"
+      "articles.created_at",
+      "articles.votes"
     )
-    .count({ comment_count: article_id })
+    .count("comment_id as comment_count")
     .leftJoin("comments", "comments.article_id", "articles.article_id")
-    .groupBy("comments.article_id")
-    .where("article_id", article_id);
+    .groupBy("articles.article_id")
+    .where("articles.article_id", article_id)
+    .then(articles => {
+      if (articles.length === 0) {
+        return Promise.reject({ status: 404, msg: "Not found" });
+      }
+      articles[0].comment_count = Number(articles[0].comment_count);
+      return articles;
+    });
 };
 
 const updateArticles = (article_id, inc_votes) => {
