@@ -72,7 +72,7 @@ describe("/API", () => {
           expect(result.body.users[0].name).to.equal("paul");
         });
     });
-    it("ERROR:404 when given non-existent username", () => {
+    it("GET:404 errors with message not found when given non-existent username", () => {
       return request(server)
         .get("/api/users/arnold")
         .expect(404)
@@ -424,7 +424,7 @@ describe("/API", () => {
         .get("/api")
         .expect(200)
         .then(result => {
-          expect(result.body.possibleEndpoints).to.include.key("GET /topics");
+          expect(result.text).to.be.a("string");
         });
     });
   });
