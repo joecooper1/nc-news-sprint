@@ -11,7 +11,6 @@ const customErrorCatch = (err, req, res, next) => {
 };
 
 const psqlErrorCatch = (err, req, res, next) => {
-  console.log(err.hint);
   const psqlCodes = {
     "22P02": { msg: "Invalid data type", status: 400 },
     "23503": { msg: "Not found", status: 404 },

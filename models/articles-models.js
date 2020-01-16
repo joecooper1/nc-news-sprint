@@ -160,10 +160,17 @@ const selectArticles = ({
     });
 };
 
+const insertArticle = body => {
+  return connection("articles")
+    .insert(body)
+    .returning("*");
+};
+
 module.exports = {
   selectArticle,
   updateArticles,
   insertComment,
   selectComments,
-  selectArticles
+  selectArticles,
+  insertArticle
 };

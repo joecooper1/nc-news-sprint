@@ -60,6 +60,19 @@ describe("/API", () => {
           expect(result.body.msg).to.equal("Invalid query");
         });
     });
+    it("POST:400 errors with message incomplete post if body sent is too much", () => {
+      return request(server)
+        .post("/api/topics")
+        .send({
+          slog: "Hats",
+          description: "All things headwear",
+          hats: "hats"
+        })
+        .expect(400)
+        .then(result => {
+          expect(result.body.msg).to.equal("Invalid query");
+        });
+    });
     it("PATCH and DELETE:405 errors with message method not allowed", () => {
       return request(server)
         .delete("/api/topics")
@@ -69,7 +82,7 @@ describe("/API", () => {
         });
     });
   });
-  describe("/users", () => {
+  describe.only("/users", () => {
     it("GET:200 gets array of all users", () => {
       return request(server)
         .get("/api/users")
@@ -127,8 +140,53 @@ describe("/API", () => {
           expect(response.body.msg).to.equal("Username already exists");
         });
     });
+    it.only("PATCH:200 edits user information and returns user", () => {
+      return request(server)
+        .patch("/api/users/rogersop")
+        .send({ name: "Brad", avatar_url: "newurl.com" })
+        .expect(200)
+        .then(response => {
+          expect(response.body.user.name).to.equal("Brad");
+          expect(response.body.user.avatar_url).to.equal("newurl.com");
+        });
+    });
+    it.only("PATCH:200 does not change user if given no valid info", () => {
+      return request(server)
+        .patch("/api/users/butter_bridge")
+        .send({ nombre: "Brad", avatar_thing: "newurl.com" })
+        .expect(200)
+        .then(response => {
+          expect(response.body.user.name).to.equal("jonny");
+          expect(response.body.user.avatar_url).to.equal(
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+          );
+        });
+    });
+    it.only("PATCH:404 errors with message not found if given non-existant username", () => {
+      return request(server)
+        .patch("/api/users/bloblob")
+        .send({ name: "Brad" })
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("User not found");
+        });
+    });
   });
   describe("/articles", () => {
+    it("POST:201 posts a new article and returns it", () => {
+      return request(server)
+        .post("/api/articles")
+        .send({
+          title: "cats are art",
+          body: "yep",
+          topic: "cats",
+          author: "butter_bridge"
+        })
+        .expect(201)
+        .then(result => {
+          expect(result.body.article.title).to.equal("cats are art");
+        });
+    });
     it("GET:200 returns article by article id", () => {
       return request(server)
         .get("/api/articles/1")
@@ -333,6 +391,16 @@ describe("/API", () => {
           expect(result.body.msg).to.equal("Invalid data type");
         });
     });
+    it("GET:200 defaults to sort_by date and descending order", () => {
+      return request(server)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(result => {
+          expect(result.body.comments).to.be.sortedBy("created_at", {
+            descending: true
+          });
+        });
+    });
     it("GET:200 returns array of comments sorted by a valid column in specified order", () => {
       return request(server)
         .get("/api/articles/1/comments?sort_by=author&order=desc")
@@ -378,6 +446,16 @@ describe("/API", () => {
           expect(result.body.articles[0].title).to.equal(
             "Living in the shadow of a great man"
           );
+        });
+    });
+    it("GET:200 defaults to sort_by date and descending order", () => {
+      return request(server)
+        .get("/api/articles/")
+        .expect(200)
+        .then(result => {
+          expect(result.body.articles).to.be.sortedBy("created_at", {
+            descending: true
+          });
         });
     });
     it("GET:200 returns array of all articles sorted by a valid column in a specified order", () => {
@@ -596,7 +674,7 @@ describe("/API", () => {
         });
     });
   });
-  describe.only("/other", () => {
+  describe("/other", () => {
     it("GET:200 returns info on all possible endpoints", () => {
       return request(server)
         .get("/api")

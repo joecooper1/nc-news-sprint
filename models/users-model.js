@@ -17,4 +17,22 @@ const insertUser = body => {
     .returning("*");
 };
 
-module.exports = { selectUsers, insertUser };
+const updateUser = ({ name, avatar_url }, params) => {
+  console.log(name, avatar_url, params);
+  return connection("users")
+    .modify(queryString => {
+      if (name) queryString.update({ name });
+      if (avatar_url) queryString.update({ avatar_url });
+      if (!name && !avatar_url) queryString.select("*");
+    })
+    .where("username", params.username)
+    .returning("*")
+    .then(user => {
+      if (user.length === 0) {
+        return Promise.reject({ status: 404, msg: "User not found" });
+      }
+      return user;
+    });
+};
+
+module.exports = { selectUsers, insertUser, updateUser };

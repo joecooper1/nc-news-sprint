@@ -3,7 +3,8 @@ const {
   patchArticles,
   postComment,
   getComments,
-  getArticles
+  getArticles,
+  postArticle
 } = require("../controllers/articles-controller");
 const { methodDisallowed } = require("../controllers/api-controllers");
 const articlesRouter = require("express").Router();
@@ -23,6 +24,7 @@ articlesRouter
 articlesRouter
   .route("/")
   .get(getArticles)
+  .post(postArticle)
   .all(methodDisallowed);
 
 module.exports = { articlesRouter };

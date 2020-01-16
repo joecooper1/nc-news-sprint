@@ -1,4 +1,8 @@
-const { getUsers, postUser } = require("../controllers/users-controller");
+const {
+  getUsers,
+  postUser,
+  patchUser
+} = require("../controllers/users-controller");
 const { methodDisallowed } = require("../controllers/api-controllers");
 const usersRouter = require("express").Router();
 
@@ -10,6 +14,7 @@ usersRouter
 usersRouter
   .route("/:username")
   .get(getUsers)
+  .patch(patchUser)
   .all(methodDisallowed);
 
 module.exports = { usersRouter };

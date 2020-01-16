@@ -1,4 +1,8 @@
-const { selectUsers, insertUser } = require("../models/users-model");
+const {
+  selectUsers,
+  insertUser,
+  updateUser
+} = require("../models/users-model");
 
 const getUsers = (req, res, next) => {
   const { username } = req.params;
@@ -20,4 +24,12 @@ const postUser = (req, res, next) => {
     .catch(err => next(err));
 };
 
-module.exports = { getUsers, postUser };
+const patchUser = (req, res, next) => {
+  updateUser(req.body, req.params)
+    .then(user => {
+      res.status(200).send({ user: user[0] });
+    })
+    .catch(err => next(err));
+};
+
+module.exports = { getUsers, postUser, patchUser };
