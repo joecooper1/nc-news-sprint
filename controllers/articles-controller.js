@@ -9,8 +9,8 @@ const {
 const getArticle = (req, res, next) => {
   const { article_id } = req.params;
   selectArticle(article_id)
-    .then(articles => {
-      res.status(200).send({ articles });
+    .then(article => {
+      res.status(200).send({ article });
     })
     .catch(err => next(err));
 };
@@ -19,8 +19,8 @@ const patchArticles = (req, res, next) => {
   const { inc_votes } = req.body;
   const { article_id } = req.params;
   updateArticles(article_id, inc_votes)
-    .then(articles => {
-      res.status(200).send({ articles });
+    .then(article => {
+      res.status(200).send({ article });
     })
     .catch(err => next(err));
 };
@@ -37,8 +37,8 @@ const postComment = (req, res, next) => {
 
 const getComments = (req, res, next) => {
   const { article_id } = req.params;
-  const { sort_by, order } = req.query;
-  selectComments(article_id, sort_by, order)
+  const { sort_by, order, limit, p } = req.query;
+  selectComments(article_id, sort_by, order, limit, p)
     .then(comments => {
       res.status(200).send({ comments });
     })
@@ -47,8 +47,8 @@ const getComments = (req, res, next) => {
 
 const getArticles = (req, res, next) => {
   selectArticles(req.query)
-    .then(articles => {
-      res.status(200).send({ articles });
+    .then(({ articles, total_count }) => {
+      res.status(200).send({ articles, total_count });
     })
     .catch(err => next(err));
 };

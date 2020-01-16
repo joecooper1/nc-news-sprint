@@ -16,14 +16,15 @@ exports.makeRefObj = (list, property1, property2) => {
 };
 
 exports.formatComments = (comments, articleRef) => {
-  const newList = comments.map(comment => {
-    const newComment = { ...comment };
-    newComment.article_id = articleRef[newComment.belongs_to];
-    delete newComment.belongs_to;
-    newComment.created_at = new Date(newComment.created_at);
-    newComment.author = newComment.created_by;
-    delete newComment.created_by;
-    return newComment;
-  });
+  const newList = comments.map(
+    ({ belongs_to, created_by, created_at, ...comment }) => {
+      return {
+        ["article_id"]: articleRef[belongs_to],
+        ["author"]: created_by,
+        created_at: new Date(created_at),
+        ...comment
+      }; //instead of creating and deleting keys change the neame of the keys
+    }
+  );
   return newList;
 };

@@ -11,4 +11,10 @@ const selectUsers = (username = "%") => {
     });
 };
 
-module.exports = { selectUsers };
+const insertUser = body => {
+  return connection("users")
+    .insert(body)
+    .returning("*");
+};
+
+module.exports = { selectUsers, insertUser };

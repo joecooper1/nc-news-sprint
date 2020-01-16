@@ -20,6 +20,9 @@ articlesRouter
   .get(getComments)
   .all(methodDisallowed);
 
-articlesRouter.route("/").get(getArticles);
+articlesRouter
+  .route("/")
+  .get(getArticles)
+  .all(methodDisallowed);
 
 module.exports = { articlesRouter };

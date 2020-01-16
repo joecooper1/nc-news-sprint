@@ -41,14 +41,14 @@ describe("/API", () => {
     });
     it("PATCH POST and DELETE:405 errors with message method not allowed", () => {
       return request(server)
-        .patch("/api/topics")
+        .delete("/api/topics")
         .expect(405)
         .then(result => {
           expect(result.body.msg).to.equal("Method not allowed");
         });
     });
   });
-  describe("/users", () => {
+  describe.only("/users", () => {
     it("GET:200 gets array of all users", () => {
       return request(server)
         .get("/api/users")
@@ -68,8 +68,8 @@ describe("/API", () => {
         .get("/api/users/rogersop")
         .expect(200)
         .then(result => {
-          expect(result.body.users).to.be.an("array");
-          expect(result.body.users[0].name).to.equal("paul");
+          expect(result.body.user).to.be.an("object");
+          expect(result.body.user.name).to.equal("paul");
         });
     });
     it("GET:404 errors with message not found when given non-existent username", () => {
@@ -80,6 +80,19 @@ describe("/API", () => {
           expect(result.body.msg).to.equal("Not found");
         });
     });
+    it("POST:201 creates a new user", () => {
+      return request(server)
+        .post("/api/users")
+        .send({
+          username: "zoopazoopa890",
+          name: "Gill",
+          avatar_url: "fakeurl.com"
+        })
+        .expect(201)
+        .then(response => {
+          expect(response.body.user.name).to.equal("Gill");
+        });
+    });
   });
   describe("/articles", () => {
     it("GET:200 returns article by article id", () => {
@@ -87,7 +100,7 @@ describe("/API", () => {
         .get("/api/articles/1")
         .expect(200)
         .then(response => {
-          expect(response.body.articles[0]).to.have.keys(
+          expect(response.body.article).to.have.keys(
             "title",
             "article_id",
             "body",
@@ -97,7 +110,7 @@ describe("/API", () => {
             "author",
             "comment_count"
           );
-          expect(response.body.articles[0].comment_count).to.equal(13);
+          expect(response.body.article.comment_count).to.equal(13);
         });
     });
     it("GET:400 errors with message invalid data type if given a string as a parameter", () => {
@@ -118,11 +131,11 @@ describe("/API", () => {
     });
     it("PATCH:200 updates an article by adding votes and returns the article", () => {
       return request(server)
-        .patch("/api/articles/2")
+        .patch("/api/articles/1")
         .send({ inc_votes: 50 })
         .expect(200)
         .then(result => {
-          expect(result.body.articles[0].votes).to.equal(50);
+          expect(result.body.article.votes).to.equal(150);
         });
     });
     it("PATCH:404 errors with message not found if given non-existant id", () => {
@@ -161,7 +174,7 @@ describe("/API", () => {
         })
         .expect(201)
         .then(result => {
-          expect(result.body.comment[0]).to.have.keys(
+          expect(result.body.comment).to.have.keys(
             "comment_id",
             "author",
             "article_id",
@@ -169,6 +182,8 @@ describe("/API", () => {
             "votes",
             "created_at"
           );
+          expect(result.body.comment.body).to.equal("Nice!!!!!");
+          expect(result.body.comment.author).to.equal("lurker");
         });
     });
     it("POST:404 errors with message article not found if given non-existant id", () => {
@@ -205,7 +220,7 @@ describe("/API", () => {
           expect(result.body.msg).to.equal("Must specify username!");
         });
     });
-    it("GET:200 returns array of comments on each article", () => {
+    it("GET:200 returns array of comments on each article, default limit of 10", () => {
       return request(server)
         .get("/api/articles/1/comments")
         .expect(200)
@@ -218,6 +233,45 @@ describe("/API", () => {
             "votes",
             "created_at"
           );
+          expect(result.body.comments.length).to.equal(10);
+          expect(result.body.comments[0].body).to.equal(
+            "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky."
+          );
+        });
+    });
+    it("GET:200 works when limit is specified", () => {
+      return request(server)
+        .get("/api/articles/1/comments?limit=4")
+        .expect(200)
+        .then(result => {
+          expect(result.body.comments.length).to.equal(4);
+        });
+    });
+    it("GET:200 works when p is specified", () => {
+      return request(server)
+        .get("/api/articles/1/comments?limit=4&p=2")
+        .expect(200)
+        .then(result => {
+          expect(result.body.comments.length).to.equal(4);
+          expect(result.body.comments[0].body).to.equal(
+            "I hate streaming eyes even more"
+          );
+        });
+    });
+    it("GET:400 errors with message invalid query if limit or p is invalid", () => {
+      return request(server)
+        .get("/api/articles/1/comments?limit=4.&p=pea")
+        .expect(400)
+        .then(result => {
+          expect(result.body.msg).to.equal("Number must be a valid integer");
+        });
+    });
+    it("GET:400 errors with message p cannot be less than one if p is zero", () => {
+      return request(server)
+        .get("/api/articles/1/comments?limit=3&p=0")
+        .expect(400)
+        .then(result => {
+          expect(result.body.msg).to.equal("Page cannot be less than one");
         });
     });
     it("GET:200 returns empty array if given id of article with no comments", () => {
@@ -271,7 +325,7 @@ describe("/API", () => {
           expect(result.body.msg).to.equal("Order must be 'asc' or 'desc'");
         });
     });
-    it("GET:200 returns array of all articles", () => {
+    it("GET:200 returns array of all articles, limited to ten by default", () => {
       return request(server)
         .get("/api/articles")
         .expect(200)
@@ -286,6 +340,10 @@ describe("/API", () => {
             "votes",
             "comment_count"
           );
+          expect(result.body.articles.length).to.equal(10);
+          expect(result.body.articles[0].title).to.equal(
+            "Living in the shadow of a great man"
+          );
         });
     });
     it("GET:200 returns array of all articles sorted by a valid column in a specified order", () => {
@@ -296,6 +354,74 @@ describe("/API", () => {
           expect(result.body.articles).to.be.sortedBy("title", {
             descending: true
           });
+        });
+    });
+    it("GET:200 returns array of all articles, with limit set by query, page one by default", () => {
+      return request(server)
+        .get("/api/articles?limit=3")
+        .expect(200)
+        .then(result => {
+          expect(result.body.articles.length).to.equal(3);
+          expect(result.body.articles[0].title).to.equal(
+            "Living in the shadow of a great man"
+          );
+        });
+    });
+    it("GET:200 returns array of all articles, with limit set, and with page set", () => {
+      return request(server)
+        .get("/api/articles?limit=3&p=2")
+        .expect(200)
+        .then(result => {
+          expect(result.body.articles.length).to.equal(3);
+          expect(result.body.articles[0].title).to.equal("Student SUES Mitch!");
+        });
+    });
+    it("GET:400 errors with message invalid query if limit or p value is not a number", () => {
+      return request(server)
+        .get("/api/articles?limit=blue")
+        .expect(400)
+        .then(result => {
+          expect(result.body.msg).to.equal("Number must be a valid integer");
+        });
+    });
+    it("GET:400 errors with message invalid query if limit or p value is a decimal", () => {
+      return request(server)
+        .get("/api/articles?p=4.5")
+        .expect(400)
+        .then(result => {
+          expect(result.body.msg).to.equal("Number must be a valid integer");
+        });
+    });
+    it("GET:400 errors message Page can not be less than one if given p value less than 1", () => {
+      return request(server)
+        .get("/api/articles?limit=3&p=0")
+        .expect(400)
+        .then(result => {
+          expect(result.body.msg).to.equal("Page cannot be less than one");
+        });
+    });
+    it("GET:404 errors with message page not found if p is too high", () => {
+      return request(server)
+        .get("/api/articles?limit=3&p=100")
+        .expect(404)
+        .then(result => {
+          expect(result.body.msg).to.equal("Page does not exist");
+        });
+    });
+    it("GET:404 errors with message page not found if p is too high, while author or topic is specified", () => {
+      return request(server)
+        .get("/api/articles?author=rogersop&topic=mitch&limit=3&p=100")
+        .expect(404)
+        .then(result => {
+          expect(result.body.msg).to.equal("Page does not exist");
+        });
+    });
+    it("GET:200 responds with a total_count property, displaying total number of articles available", () => {
+      return request(server)
+        .get("/api/articles?limit=3&p=2")
+        .expect(200)
+        .then(result => {
+          expect(result.body.total_count).to.equal(12);
         });
     });
     it("GET:400 errors with message Invalid query if given non-existant column", () => {
@@ -314,25 +440,41 @@ describe("/API", () => {
           expect(result.body.msg).to.equal("Order must be 'asc' or 'desc'");
         });
     });
-    it("GET:200 returns empty array if given non-existent author", () => {
+    it("GET:404 errors with message not found if given non-existent author", () => {
       return request(server)
         .get("/api/articles?author=larry")
-        .expect(200)
+        .expect(404)
         .then(result => {
-          expect(result.body.articles).to.be.an("array");
-          expect(result.body.articles.length).to.equal(0);
+          expect(result.body.msg).to.equal("Not found");
         });
     });
-    it("GET:200 returns empty array if given non-existent topic", () => {
+    it("GET:404 errors with message not found if given non-existent topic", () => {
       return request(server)
         .get("/api/articles?topic=food")
-        .expect(200)
+        .expect(404)
         .then(result => {
-          expect(result.body.articles).to.be.an("array");
-          expect(result.body.articles.length).to.equal(0);
+          expect(result.body.msg).to.equal("Not found");
         });
     });
-    //need changing ^ to differentiate between empty topics/authors and unreal ones
+    it("GET: 200 returns empty array if given author with no articles", () => {
+      return request(server)
+        .get("/api/articles?author=lurker")
+        .expect(200)
+        .then(result => {
+          expect(result.body.articles.length).to.equal(0);
+          expect(result.body.articles).to.be.an("array");
+          expect(result.body.total_count).to.equal(0);
+        });
+    });
+    it("GET: 200 returns empty array if given topic with no articles", () => {
+      return request(server)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then(result => {
+          expect(result.body.articles.length).to.equal(0);
+          expect(result.body.articles).to.be.an("array");
+        });
+    });
     it("GET:200 returns array of all articles filtered by author and/or topic", () => {
       return request(server)
         .get("/api/articles?author=rogersop&topic=mitch")
@@ -349,7 +491,7 @@ describe("/API", () => {
         .send({ inc_votes: -20 })
         .expect(200)
         .then(result => {
-          expect(result.body.comment[0].votes).to.equal(-20);
+          expect(result.body.comment.votes).to.equal(-20);
         });
     });
     it("PATCH:404 errors with message Not found if given a non-existent id", () => {
@@ -394,7 +536,7 @@ describe("/API", () => {
         .send({ inc_votes: 1, title: "New title" })
         .expect(200)
         .then(result => {
-          expect(result.body.comment[0].votes).to.equal(1);
+          expect(result.body.comment.votes).to.equal(17);
         });
     });
     it("DELETE:204 deletes a comment", () => {
