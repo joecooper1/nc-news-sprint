@@ -20,12 +20,11 @@ const selectArticle = article_id => {
       if (article === undefined) {
         return Promise.reject({ status: 404, msg: "Not found" });
       }
-      article.comment_count = Number(article.comment_count);
       return article;
     });
 };
 
-const updateArticles = (article_id, inc_votes) => {
+const updateArticles = (article_id, inc_votes = 0) => {
   return connection("articles")
     .where("article_id", article_id)
     .increment("votes", inc_votes)
@@ -87,7 +86,7 @@ const selectComments = (article_id, sort_by, order, limit = 10, p) => {
         return connection("comments")
           .select("comment_id", "votes", "created_at", "author", "body")
           .where("article_id", article_id)
-          .orderBy(sort_by || "comment_id", order || "asc")
+          .orderBy(sort_by || "created_at", order || "desc")
           .limit(limit)
           .modify(queryString => {
             if (p !== undefined && p > 1) queryString.offset(limit * (p - 1));
@@ -154,9 +153,9 @@ const selectArticles = ({
           return checkSecondary("topics", "slug", topic, p);
         }
       }
-      articles.forEach(article => {
-        article.comment_count = Number(article.comment_count);
-      });
+      // articles.forEach(article => {
+      //   article.comment_count = Number(article.comment_count);
+      // });
       return countTotalArticles(articles, author, topic, p);
     });
 };

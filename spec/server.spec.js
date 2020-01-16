@@ -144,7 +144,7 @@ describe("/API", () => {
             "author",
             "comment_count"
           );
-          expect(response.body.article.comment_count).to.equal(13);
+          expect(response.body.article.comment_count).to.equal("13");
         });
     });
     it("GET:400 errors with message invalid data type if given a string as a parameter", () => {
@@ -382,10 +382,10 @@ describe("/API", () => {
     });
     it("GET:200 returns array of all articles sorted by a valid column in a specified order", () => {
       return request(server)
-        .get("/api/articles?sort_by=title&order=desc")
+        .get("/api/articles?sort_by=article_id&order=desc")
         .expect(200)
         .then(result => {
-          expect(result.body.articles).to.be.sortedBy("title", {
+          expect(result.body.articles).to.be.sortedBy("article_id", {
             descending: true
           });
         });
@@ -517,6 +517,7 @@ describe("/API", () => {
           expect(result.body.articles.length).to.equal(2);
         });
     });
+    it("DELETE:204 deletes", () => {});
   });
   describe("/comments", () => {
     it("PATCH:200 updates a comment by adding votes and returns the comment", () => {
