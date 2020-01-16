@@ -48,7 +48,7 @@ describe("/API", () => {
         });
     });
   });
-  describe.only("/users", () => {
+  describe("/users", () => {
     it("GET:200 gets array of all users", () => {
       return request(server)
         .get("/api/users")
@@ -91,6 +91,19 @@ describe("/API", () => {
         .expect(201)
         .then(response => {
           expect(response.body.user.name).to.equal("Gill");
+        });
+    });
+    it("POST:403 errors with message username already taken if username already exists", () => {
+      return request(server)
+        .post("/api/users")
+        .send({
+          username: "lurker",
+          name: "Gill",
+          avatar_url: "fakeurl.com"
+        })
+        .expect(403)
+        .then(response => {
+          expect(response.body.msg).to.equal("Username already exists");
         });
     });
   });
@@ -456,7 +469,7 @@ describe("/API", () => {
           expect(result.body.msg).to.equal("Not found");
         });
     });
-    it("GET: 200 returns empty array if given author with no articles", () => {
+    it("GET:200 returns empty array if given author with no articles", () => {
       return request(server)
         .get("/api/articles?author=lurker")
         .expect(200)
@@ -466,7 +479,7 @@ describe("/API", () => {
           expect(result.body.total_count).to.equal(0);
         });
     });
-    it("GET: 200 returns empty array if given topic with no articles", () => {
+    it("GET:200 returns empty array if given topic with no articles", () => {
       return request(server)
         .get("/api/articles?topic=paper")
         .expect(200)

@@ -13,9 +13,11 @@ const getUsers = (req, res, next) => {
 };
 
 const postUser = (req, res, next) => {
-  insertUser(req.body).then(user => {
-    res.status(201).send({ user: user[0] });
-  });
+  insertUser(req.body)
+    .then(user => {
+      res.status(201).send({ user: user[0] });
+    })
+    .catch(err => next(err));
 };
 
 module.exports = { getUsers, postUser };
