@@ -39,7 +39,28 @@ describe("/API", () => {
           expect(result.body.msg).to.equal("Not found");
         });
     });
-    it("PATCH POST and DELETE:405 errors with message method not allowed", () => {
+    it("POST:201 posts new topic and returns it", () => {
+      return request(server)
+        .post("/api/topics")
+        .send({ slug: "Hats", description: "All things headwear" })
+        .expect(201)
+        .then(result => {
+          expect(result.body.topic).to.deep.equal({
+            slug: "Hats",
+            description: "All things headwear"
+          });
+        });
+    });
+    it("POST:400 errors with message incomplete post if body sent is not complete", () => {
+      return request(server)
+        .post("/api/topics")
+        .send({ slog: "Hats", description: "All things headwear" })
+        .expect(400)
+        .then(result => {
+          expect(result.body.msg).to.equal("Invalid query");
+        });
+    });
+    it("PATCH and DELETE:405 errors with message method not allowed", () => {
       return request(server)
         .delete("/api/topics")
         .expect(405)
