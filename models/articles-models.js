@@ -95,8 +95,8 @@ const selectComments = (article_id, sort_by, order, limit = 10, p) => {
 };
 
 const selectArticles = ({
-  sort_by = "article_id",
-  order = "asc",
+  sort_by = "created_at",
+  order = "desc",
   author,
   topic,
   limit = 10,
