@@ -596,13 +596,21 @@ describe("/API", () => {
         });
     });
   });
-  describe("/other", () => {
+  describe.only("/other", () => {
     it("GET:200 returns info on all possible endpoints", () => {
       return request(server)
         .get("/api")
         .expect(200)
         .then(result => {
           expect(result.text).to.be.a("string");
+        });
+    });
+    it("DELETE:405 does not allow deleting the api", () => {
+      return request(server)
+        .delete("/api")
+        .expect(405)
+        .then(result => {
+          expect(result.body.msg).to.equal("Method not allowed");
         });
     });
   });

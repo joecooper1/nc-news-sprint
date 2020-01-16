@@ -13,6 +13,9 @@ apiRouter.use("/users", usersRouter);
 apiRouter.use("/articles", articlesRouter);
 apiRouter.use("/comments", commentsRouter);
 
-apiRouter.get("/", getEndpoints).all(methodDisallowed);
+apiRouter
+  .route("/")
+  .get(getEndpoints)
+  .all(methodDisallowed);
 
 module.exports = apiRouter;

@@ -401,3 +401,19 @@ POST /api/topics
 POST /api/users
 GET /api/users
 ```
+
+# BE extras
+
+## Easy
+
+- edit an article body
+- edit a comment body
+- edit a users information
+- search for an article by title
+
+## Harder
+
+- protected endpoints with JWT authorization (we have some notes that can help out with this but will make you frontend a little bit more difficult)
+- endpoint that will get articles created in last 10 minutes/ per topic / per user etc (could offer a nice notification visual on the front end)
+- user - favourited / bookmarked articles junction table + endpoint (could base on upvoted articles or a seperate bookmark endpoint)
+- research using picture storage / random generation for topics
