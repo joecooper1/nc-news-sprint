@@ -20,8 +20,11 @@ const insertUser = body => {
 const updateUser = ({ name, avatar_url }, params) => {
   return connection("users")
     .modify(queryString => {
-      if (name) queryString.update({ name });
-      if (avatar_url) queryString.update({ avatar_url });
+      if (name && avatar_url) queryString.update({ name, avatar_url });
+      else {
+        if (name) queryString.update({ name });
+        if (avatar_url) queryString.update({ avatar_url });
+      }
       if (!name && !avatar_url) queryString.select("*");
     })
     .where("username", params.username)
