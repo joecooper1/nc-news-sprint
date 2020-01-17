@@ -15,7 +15,8 @@ const psqlErrorCatch = (err, req, res, next) => {
     "22P02": { msg: "Invalid data type", status: 400 },
     "23503": { msg: "Not found", status: 404 },
     "42703": { msg: "Invalid query", status: 400 },
-    "23505": { msg: "Username already exists", status: 403 }
+    "23505": { msg: "Username already exists", status: 403 },
+    "42P01": { msg: "Table does not exist", status: 404 }
   };
   if (psqlCodes.hasOwnProperty(err.code))
     res

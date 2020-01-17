@@ -1,4 +1,4 @@
-process.env.NODE_ENV = "test";
+process.env.NODE_ENV = "development";
 
 const chai = require("chai");
 chai.use(require("chai-sorted"));
@@ -721,9 +721,9 @@ describe("/API", () => {
     });
   });
   describe.only("/favourites", () => {
-    it("GET:200 returns all articles favourited by a particular user", () => {
+    it.only("GET:200 returns all articles favourited by a particular user", () => {
       return request(server)
-        .get("/api/users/rogersop/favourites")
+        .get("/api/users/grumpy19/favourites")
         .expect(200)
         .then(result => {
           expect(result.body.articles.length).to.equal(2);
