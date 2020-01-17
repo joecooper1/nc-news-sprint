@@ -720,6 +720,75 @@ describe("/API", () => {
         });
     });
   });
+  describe("/favourites", () => {
+    it("GET:200 returns all articles favourited by a particular user", () => {
+      return request(server)
+        .get("/api/users/rogersop/favourites")
+        .expect(200)
+        .then(result => {
+          expect(result.body.articles.length).to.equal(2);
+        });
+    });
+    it("GET:200 returns empty array if user has no favourites", () => {
+      return request(server)
+        .get("/api/users/butter_bridge/favourites")
+        .expect(200)
+        .then(result => {
+          expect(result.body.articles.length).to.equal(0);
+        });
+    });
+    it("GET:404 errors with message not found if user does not exists", () => {
+      return request(server)
+        .get("/api/users/froyo/favourites")
+        .expect(404)
+        .then(result => {
+          expect(result.body.msg).to.equal("Not found");
+        });
+    });
+    it("POST:201 adds a new favourite for a user and returns message favourited", () => {
+      return request(server)
+        .post("/api/users/butter_bridge/favourites/3")
+        .expect(201)
+        .then(result => {
+          expect(result.body.msg).to.equal("Favourited");
+          return request(server)
+            .get("/api/users/butter_bridge/favourites")
+            .expect(200)
+            .then(result => {
+              expect(result.body.articles.length).to.equal(1);
+            });
+        });
+    });
+    it("POST:204 unfavourites an article if already favourited by that user", () => {
+      return request(server)
+        .post("/api/users/lurker/favourites/2")
+        .expect(204)
+        .then(result => {
+          return request(server)
+            .get("/api/users/lurker/favourites")
+            .expect(200)
+            .then(result => {
+              expect(result.body.articles.length).to.equal(0);
+            });
+        });
+    });
+    it("POST:404 errors with message not found if username or article does not exist", () => {
+      return request(server)
+        .post("/api/users/lurker/favourites/300")
+        .expect(404)
+        .then(result => {
+          expect(result.body.msg).to.equal("Not found");
+        });
+    });
+    it("POST:400 errors with message invalid data type if article_id is invalid", () => {
+      return request(server)
+        .post("/api/users/lurker/favourites/dogs")
+        .expect(400)
+        .then(result => {
+          expect(result.body.msg).to.equal("Invalid data type");
+        });
+    });
+  });
   describe("/other", () => {
     it("GET:200 returns info on all possible endpoints", () => {
       return request(server)

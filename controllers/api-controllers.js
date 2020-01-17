@@ -16,7 +16,11 @@ const getEndpoints = (req, res, next) => {
       "get all articles, accepts queries sort_by, order, author, topic, title, year, limit and p (page)",
     "PATCH /comments/:comment_id":
       "updates vote count for comment, send in form {inc_votes: 1}",
-    "DELETE /comments/:comment_id": "deletes comment"
+    "DELETE /comments/:comment_id": "deletes comment",
+    "GET /users/:user_id/favourites":
+      "gets list of articles favourited by a user",
+    "POST /users/:user_id/favourites/:article_id":
+      "favourites or unfavourites an article"
   };
   res.status(200).send(JSON.stringify(possibleEndpoints));
 };
