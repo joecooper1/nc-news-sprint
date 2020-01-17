@@ -13,7 +13,7 @@ const getEndpoints = (req, res, next) => {
     "GET /articles/:article_id/comments":
       "get all comments for article, accepts queries sort_by, order, limit, and p (page)",
     "GET /articles":
-      "get all articles, accepts queries sort_by, order, author, topic, limit and p (page)",
+      "get all articles, accepts queries sort_by, order, author, topic, title, year, limit and p (page)",
     "PATCH /comments/:comment_id":
       "updates vote count for comment, send in form {inc_votes: 1}",
     "DELETE /comments/:comment_id": "deletes comment"

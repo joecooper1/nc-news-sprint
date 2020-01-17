@@ -104,7 +104,8 @@ const selectArticles = ({
   topic,
   limit = 10,
   p,
-  title
+  title,
+  year
 }) => {
   if (order !== "asc" && order !== "desc") {
     return Promise.reject({
@@ -143,6 +144,8 @@ const selectArticles = ({
       if (topic) queryString.where("topic", topic);
       if (p !== undefined && p > 1) queryString.offset(limit * (p - 1));
       if (title) queryString.where("title", "ilike", "%" + title + "%");
+      if (year)
+        queryString.where("articles.created_at", "ilike", "%" + year + "%");
     })
     .orderBy(sort_by, order)
     .count("comment_id as comment_count")
@@ -160,8 +163,11 @@ const selectArticles = ({
         if (title) {
           return checkSecondary("articles", "title", title, p);
         }
+        if (year) {
+          return checkSecondary("articles", "created_at", year, p);
+        }
       }
-      return countTotalArticles(articles, author, topic, p, title, limit);
+      return countTotalArticles(articles, author, topic, p, title, year);
     });
 };
 

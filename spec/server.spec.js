@@ -614,7 +614,7 @@ describe("/API", () => {
           expect(result.body.articles.length).to.equal(2);
         });
     });
-    it.only("GET:200 gets a list of articles by title", () => {
+    it("GET:200 gets a list of articles by title", () => {
       return request(server)
         .get("/api/articles?title=moustache")
         .expect(200)
@@ -624,7 +624,7 @@ describe("/API", () => {
           expect(result.body.articles[0].title).to.equal("Moustache");
         });
     });
-    it.only("GET:200 gets a list of articles by part of title", () => {
+    it("GET:200 gets a list of articles by part of title", () => {
       return request(server)
         .get("/api/articles?title=mitch")
         .expect(200)
@@ -633,7 +633,7 @@ describe("/API", () => {
           expect(result.body.articles.length).to.equal(3);
         });
     });
-    it.only("GET:404 errors with message not found when no title match is found", () => {
+    it("GET:404 errors with message not found when no title match is found", () => {
       return request(server)
         .get("/api/articles?title=aliens")
         .expect(404)

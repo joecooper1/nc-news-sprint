@@ -2,7 +2,8 @@ const {
   topicData,
   articleData,
   commentData,
-  userData
+  userData,
+  favouriteData
 } = require("../data/index.js");
 
 const { formatDates, formatComments, makeRefObj } = require("../utils/utils");
@@ -25,6 +26,8 @@ exports.seed = function(knex) {
     .then(articleRows => {
       const articlesRefObj = makeRefObj(articleRows, "title", "article_id");
       const formattedComments = formatComments(commentData, articlesRefObj);
-      return knex("comments").insert(formattedComments);
+      const commentsInsertions = knex("comments").insert(formattedComments);
+      const favouritesInsertions = knex("favourites").insert(favouriteData);
+      return Promise.all([commentsInsertions, favouritesInsertions]);
     });
 };

@@ -3,7 +3,7 @@ const connection = require("../../db/connection");
 function checkSecondary(table, column, value, p) {
   return connection(table)
     .select("*")
-    .where(column, value)
+    .where(column, "ilike", "%" + value + "%")
     .then(result => {
       if (result.length === 0) {
         return Promise.reject({
@@ -19,13 +19,14 @@ function checkSecondary(table, column, value, p) {
     });
 }
 
-function countTotalArticles(articles, author, topic, p, title) {
+function countTotalArticles(articles, author, topic, p, title, year) {
   return connection("articles")
     .select("*")
     .modify(queryString => {
       if (topic) queryString.where("topic", topic);
       if (author) queryString.where("author", author);
       if (title) queryString.where("title", "ilike", "%" + title + "%");
+      if (year) queryString.where("created_at", "ilike", "%" + year + "%");
     })
     .then(allArticles => {
       const total_count = allArticles.length;
