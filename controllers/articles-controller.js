@@ -17,9 +17,9 @@ const getArticle = (req, res, next) => {
 };
 
 const patchArticles = (req, res, next) => {
-  const { inc_votes } = req.body;
+  const { inc_votes, body } = req.body;
   const { article_id } = req.params;
-  updateArticles(article_id, inc_votes)
+  updateArticles(article_id, inc_votes, body)
     .then(article => {
       res.status(200).send({ article });
     })

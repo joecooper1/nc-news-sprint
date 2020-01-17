@@ -18,7 +18,6 @@ const insertUser = body => {
 };
 
 const updateUser = ({ name, avatar_url }, params) => {
-  console.log(name, avatar_url, params);
   return connection("users")
     .modify(queryString => {
       if (name) queryString.update({ name });

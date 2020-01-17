@@ -24,10 +24,13 @@ const selectArticle = article_id => {
     });
 };
 
-const updateArticles = (article_id, inc_votes = 0) => {
+const updateArticles = (article_id, inc_votes = 0, body) => {
   return connection("articles")
     .where("article_id", article_id)
     .increment("votes", inc_votes)
+    .modify(queryString => {
+      if (body) queryString.update("body", body);
+    })
     .returning("*")
     .then(article => {
       if (article.length === 0) {
@@ -100,7 +103,8 @@ const selectArticles = ({
   author,
   topic,
   limit = 10,
-  p
+  p,
+  title
 }) => {
   if (order !== "asc" && order !== "desc") {
     return Promise.reject({
@@ -138,6 +142,7 @@ const selectArticles = ({
       if (author) queryString.where("articles.author", author);
       if (topic) queryString.where("topic", topic);
       if (p !== undefined && p > 1) queryString.offset(limit * (p - 1));
+      if (title) queryString.where("title", "ilike", "%" + title + "%");
     })
     .orderBy(sort_by, order)
     .count("comment_id as comment_count")
@@ -152,11 +157,11 @@ const selectArticles = ({
         if (topic) {
           return checkSecondary("topics", "slug", topic, p);
         }
+        if (title) {
+          return checkSecondary("articles", "title", title, p);
+        }
       }
-      // articles.forEach(article => {
-      //   article.comment_count = Number(article.comment_count);
-      // });
-      return countTotalArticles(articles, author, topic, p);
+      return countTotalArticles(articles, author, topic, p, title, limit);
     });
 };
 

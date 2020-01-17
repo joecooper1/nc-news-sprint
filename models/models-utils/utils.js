@@ -19,12 +19,13 @@ function checkSecondary(table, column, value, p) {
     });
 }
 
-function countTotalArticles(articles, author, topic, p) {
+function countTotalArticles(articles, author, topic, p, title) {
   return connection("articles")
     .select("*")
     .modify(queryString => {
       if (topic) queryString.where("topic", topic);
       if (author) queryString.where("author", author);
+      if (title) queryString.where("title", "ilike", "%" + title + "%");
     })
     .then(allArticles => {
       const total_count = allArticles.length;

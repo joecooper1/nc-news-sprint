@@ -82,7 +82,7 @@ describe("/API", () => {
         });
     });
   });
-  describe.only("/users", () => {
+  describe("/users", () => {
     it("GET:200 gets array of all users", () => {
       return request(server)
         .get("/api/users")
@@ -140,7 +140,7 @@ describe("/API", () => {
           expect(response.body.msg).to.equal("Username already exists");
         });
     });
-    it.only("PATCH:200 edits user information and returns user", () => {
+    it("PATCH:200 edits user information and returns user", () => {
       return request(server)
         .patch("/api/users/rogersop")
         .send({ name: "Brad", avatar_url: "newurl.com" })
@@ -150,7 +150,7 @@ describe("/API", () => {
           expect(response.body.user.avatar_url).to.equal("newurl.com");
         });
     });
-    it.only("PATCH:200 does not change user if given no valid info", () => {
+    it("PATCH:200 does not change user if given no valid info", () => {
       return request(server)
         .patch("/api/users/butter_bridge")
         .send({ nombre: "Brad", avatar_thing: "newurl.com" })
@@ -162,7 +162,7 @@ describe("/API", () => {
           );
         });
     });
-    it.only("PATCH:404 errors with message not found if given non-existant username", () => {
+    it("PATCH:404 errors with message not found if given non-existant username", () => {
       return request(server)
         .patch("/api/users/bloblob")
         .send({ name: "Brad" })
@@ -219,6 +219,25 @@ describe("/API", () => {
         .expect(404)
         .then(response => {
           expect(response.body.msg).to.equal("Not found");
+        });
+    });
+    it("PATCH:200 edits an article body and returns the article", () => {
+      return request(server)
+        .patch("/api/articles/1")
+        .send({ body: "Bodies are good" })
+        .expect(200)
+        .then(result => {
+          expect(result.body.article.body).to.equal("Bodies are good");
+          expect(result.body.article.article_id).to.equal(1);
+        });
+    });
+    it("PATCH:404 errors with message not found if given a non-existant id", () => {
+      return request(server)
+        .patch("/api/articles/99")
+        .send({ body: "fake" })
+        .expect(404)
+        .then(result => {
+          expect(result.body.msg).to.equal("Not found");
         });
     });
     it("PATCH:200 updates an article by adding votes and returns the article", () => {
@@ -593,6 +612,33 @@ describe("/API", () => {
         .expect(200)
         .then(result => {
           expect(result.body.articles.length).to.equal(2);
+        });
+    });
+    it.only("GET:200 gets a list of articles by title", () => {
+      return request(server)
+        .get("/api/articles?title=moustache")
+        .expect(200)
+        .then(result => {
+          expect(result.body.articles).to.be.an("array");
+          expect(result.body.articles.length).to.equal(1);
+          expect(result.body.articles[0].title).to.equal("Moustache");
+        });
+    });
+    it.only("GET:200 gets a list of articles by part of title", () => {
+      return request(server)
+        .get("/api/articles?title=mitch")
+        .expect(200)
+        .then(result => {
+          expect(result.body.articles).to.be.an("array");
+          expect(result.body.articles.length).to.equal(3);
+        });
+    });
+    it.only("GET:404 errors with message not found when no title match is found", () => {
+      return request(server)
+        .get("/api/articles?title=aliens")
+        .expect(404)
+        .then(result => {
+          expect(result.body.msg).to.equal("Not found");
         });
     });
     it("DELETE:204 deletes", () => {});

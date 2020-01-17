@@ -5,17 +5,19 @@ const getEndpoints = (req, res, next) => {
     "GET /users": "get list of all users",
     "GET /users/:username": "get user by username",
     "POST /users": "add a new user",
+    "PATCH /users": "update user information",
     "GET /articles/:article_id": "get article by id",
-    "PATCH /articles/:article_id": "update vote count for article",
+    "PATCH /articles/:article_id":
+      "update vote count for article, send in form {inc_votes: 1}, edit body using {body: new body}",
     "POST /articles/:article_id/comments": "add comment to article",
     "GET /articles/:article_id/comments":
-      "get all comments for article, accepts queries sort_by and order",
+      "get all comments for article, accepts queries sort_by, order, limit, and p (page)",
     "GET /articles":
-      "get all articles, accepts queries sort_by, order, author and topic",
-    "PATCH /comments/:comment_id": "updates vote count for comment",
+      "get all articles, accepts queries sort_by, order, author, topic, limit and p (page)",
+    "PATCH /comments/:comment_id":
+      "updates vote count for comment, send in form {inc_votes: 1}",
     "DELETE /comments/:comment_id": "deletes comment"
   };
-  console.log(possibleEndpoints);
   res.status(200).send(JSON.stringify(possibleEndpoints));
 };
 
