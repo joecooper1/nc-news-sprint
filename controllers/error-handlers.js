@@ -26,7 +26,7 @@ const psqlErrorCatch = (err, req, res, next) => {
 
 const serverErrorCatch = (err, req, res, next) => {
   console.log(err);
-  res.status(500).send({ msg: "err" });
+  res.status(500).send({ msg: err });
 };
 
 module.exports = {
