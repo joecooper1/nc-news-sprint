@@ -1,6 +1,6 @@
 const getEndpoints = (req, res, next) => {
   const possibleEndpoints = {
-    "GET /topics": "get list of all topics",
+    "GET /topics": "get list of all topics\n",
     "POST /topics": "add a new topic",
     "GET /users": "get list of all users",
     "GET /users/:username": "get user by username",
