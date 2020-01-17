@@ -21,6 +21,10 @@ server.use(function textLogger(req, res, next) {
   });
 });
 
+server.use("/", (req, res, next) => {
+  res.status(200).send({ msg: "Home" });
+});
+
 server.use("/api", apiRouter);
 
 server.use("/*", errorCatch);
