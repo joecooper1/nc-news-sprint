@@ -720,7 +720,7 @@ describe("/API", () => {
         });
     });
   });
-  describe("/favourites", () => {
+  describe.only("/favourites", () => {
     it("GET:200 returns all articles favourited by a particular user", () => {
       return request(server)
         .get("/api/users/rogersop/favourites")
