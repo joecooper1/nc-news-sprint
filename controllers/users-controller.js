@@ -39,7 +39,10 @@ const getFavouritedArticles = (req, res, next) => {
     .then(articles => {
       res.status(200).send({ articles });
     })
-    .catch(err => next(err));
+    .catch(
+      err => res.status(200).send({ msg: "hi" })
+      // next(err));
+    );
 };
 
 const postNewFavourite = (req, res, next) => {
