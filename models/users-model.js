@@ -50,6 +50,7 @@ const selectFavouritedArticles = ({ username }) => {
     .innerJoin("articles", "articles.article_id", "favourites.article_id")
     .where("favourites.username", username)
     .then(articles => {
+      res.status(200).send({ msg: "hi" });
       if (articles.length === 0) {
         return connection("users")
           .select("*")
