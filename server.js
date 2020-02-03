@@ -8,6 +8,9 @@ const {
   psqlErrorCatch,
   serverErrorCatch
 } = require("./controllers/error-handlers");
+const cors = require("cors");
+
+server.use(cors());
 
 server.use(express.json());
 
