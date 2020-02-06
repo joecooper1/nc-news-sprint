@@ -641,13 +641,13 @@ describe("/API", () => {
           expect(result.body.msg).to.equal("Not found");
         });
     });
-    it("DELETE:204 deletes", () => {
+    it.only("DELETE:204 deletes", () => {
       return request(server)
-        .delete("/api/articles/8")
+        .delete("/api/articles/1")
         .expect(204)
         .then(() => {
           request(server)
-            .get("api/articles/8")
+            .get("api/articles/1")
             .expect(404);
         });
     });
