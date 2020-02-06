@@ -66,8 +66,8 @@ const postArticle = (req, res, next) => {
 const deleteArticle = (req, res, next) => {
   const { article_id } = req.params;
   removeArticle(article_id)
-    .then(count => {
-      res.status(204).send();
+    .then(article => {
+      res.status(204).send({ article });
     })
     .catch(err => next(err));
 };

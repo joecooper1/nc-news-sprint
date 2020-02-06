@@ -633,7 +633,7 @@ describe("/API", () => {
           expect(result.body.articles.length).to.equal(3);
         });
     });
-    it.only("GET:404 errors with message not found when no title match is found", () => {
+    it("GET:404 errors with message not found when no title match is found", () => {
       return request(server)
         .get("/api/articles?title=aliens")
         .expect(404)
@@ -641,13 +641,13 @@ describe("/API", () => {
           expect(result.body.msg).to.equal("Not found");
         });
     });
-    it.only("DELETE:204 deletes", () => {
+    it("DELETE:204 deletes", () => {
       return request(server)
         .delete("/api/articles/8")
         .expect(204)
         .then(() => {
-          return request(server)
-            .get("api/articles/7")
+          request(server)
+            .get("api/articles/8")
             .expect(404);
         });
     });
