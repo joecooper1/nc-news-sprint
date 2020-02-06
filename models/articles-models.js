@@ -177,11 +177,23 @@ const insertArticle = body => {
     .returning("*");
 };
 
+const removeArticle = article_id => {
+  return connection("articles")
+    .where("article_id", article_id)
+    .del()
+    .then(count => {
+      if (count === 0) {
+        return Promise.reject({ status: 404, msg: "Not found" });
+      }
+    });
+};
+
 module.exports = {
   selectArticle,
   updateArticles,
   insertComment,
   selectComments,
   selectArticles,
-  insertArticle
+  insertArticle,
+  removeArticle
 };

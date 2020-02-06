@@ -4,7 +4,8 @@ const {
   postComment,
   getComments,
   getArticles,
-  postArticle
+  postArticle,
+  deleteArticle
 } = require("../controllers/articles-controller");
 const { methodDisallowed } = require("../controllers/api-controllers");
 const articlesRouter = require("express").Router();
@@ -13,6 +14,7 @@ articlesRouter
   .route("/:article_id")
   .get(getArticle)
   .patch(patchArticles)
+  .delete(deleteArticle)
   .all(methodDisallowed);
 
 articlesRouter

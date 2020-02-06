@@ -641,7 +641,11 @@ describe("/API", () => {
           expect(result.body.msg).to.equal("Not found");
         });
     });
-    it("DELETE:204 deletes", () => {});
+    it.only("DELETE:204 deletes", () => {
+      return request(server)
+        .delete("/api/articles/7")
+        .expect(204);
+    });
   });
   describe("/comments", () => {
     it("PATCH:200 updates a comment by adding votes and returns the comment", () => {
