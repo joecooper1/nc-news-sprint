@@ -646,9 +646,15 @@ describe("/API", () => {
         .delete("/api/articles/1")
         .expect(204)
         .then(() => {
-          request(server)
-            .get("api/articles/1")
-            .expect(404);
+          // request(server)
+          //   .get("api/articles/1")
+          //   .expect(404);
+          //   .then(() => {
+          //     request(server)
+          //       .get("/api/articles/1/comments")
+          //       .expect(404)
+          //       .then(() => {});
+          //   });
         });
     });
   });
