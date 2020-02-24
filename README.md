@@ -1,4 +1,4 @@
-###The is my NC NEWS backend project files.
+### The is my NC NEWS backend project files.
 
 It is a basic reddit-style forum site, with user-made content, votes, comments and a favouriting system.
 
